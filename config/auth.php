@@ -44,10 +44,6 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
-        'jwt' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-        ],
     ],
 
     'providers' => [
