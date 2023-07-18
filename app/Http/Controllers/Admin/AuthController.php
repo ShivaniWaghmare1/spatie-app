@@ -37,29 +37,6 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return $e;
         }
-
-        // try {
-        //     $data = $this->service->login($request);
-        //     return response()->json([
-        //         "status" => 200,
-        //         "message" => "OK",
-        //         "data" => [
-        //             "token" => $data['token'],
-        //         ],
-        //     ], 200);
-        // } catch (ValidationException $e) {
-        //     $code = "INVALID DATA";
-        // } catch (AuthenticationException $e) {
-        //     $code = "INVALID CREDENTIALS";
-        // } catch (UnauthorizedException $e) {
-        //     $code = "UNAUTHORISED";
-        // } catch (Exception $e) {
-        //     $code = "DOES_NOT_EXIST";
-        // }
-        // return ResponseHelper::respond(
-        //     $code,
-        //     $data,
-        // );
     }
 
     /**
