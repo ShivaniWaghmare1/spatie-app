@@ -17,36 +17,21 @@ class AuthService
 
     public function login($credentials)
     {
-        $authGuard = Auth::guard('web');
-        if (!$authGuard->attempt($credentials)) {
-            return 'Invalid Login Credentials';
+        try {
+            $authGuard = Auth::guard('web');
+            if (!$authGuard->attempt($credentials)) {
+                return 'Invalid Login Credentials';
+            }
+            $user = $authGuard->user();
+            $token = $user->createToken('user')->accessToken;
+        } catch (Exception $e) {
+            return $e;
         }
-
-        $user = $authGuard->user();
-        $token = $user->createToken('user')->accessToken;
 
         return [
             'user' => $user,
             'token' => $token,
         ];
-        // try {
-        //     $authGuard = Auth::guard('web');
-        //     if (!$authGuard->attempt($credentials)) {
-        //         $data = 'Invalid Login Credentials';
-        //     } else {
-        //         $user = $authGuard->user();
-        //         $token = $user->createToken('user')->accessToken;
-
-        //         $data = [
-        //             'user' => $user,
-        //             'token' => $token,
-        //         ];
-        //     }
-        // } catch (Exception $e) {
-        //     return $e;
-        // }
-
-        // return $data;
     }
 
     public function register($request)
