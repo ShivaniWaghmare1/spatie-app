@@ -13,6 +13,7 @@ class RegisterRequest extends FormRequest
             'mobile' => 'required|numeric|digits:10|unique:users',
             'password' => 'required',
             'email' => 'required|email',
+            'role' => 'required|exists:roles,name',
         ];
     }
 
@@ -30,6 +31,8 @@ class RegisterRequest extends FormRequest
             'mobile.digits' => 'Please enter only 10 digits.',
             'password.required' => 'Please enter password.',
             'email.required' => 'Please enter email.',
+            'role.required' => 'Please enter role.',
+            'role.exists' => 'Please enter valid role.',
         ];
     }
 }

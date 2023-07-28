@@ -2,9 +2,11 @@
 
 namespace App\Repositories\Role;
 
+use Exception;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\Role\RoleRequest;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\Role\RepoInterface\RoleRepositoryInterface;
 
 class RoleRepository implements RoleRepositoryInterface
@@ -14,29 +16,46 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::select('name', 'guard_name')->get()->toArray();
     }
 
-    public function create(Request $data)
+    public function create(RoleRequest $request)
     {
-        $role = new Role();
-        $role->name = $data->name;
-        $role->save();
+        $role = Role::create(
+            ['name' => $request->name]
+        );
 
         return $role;
     }
 
-    public function getRoleByID($id)
+    public function addPermissionsToRole($roleId, array $permissions)
     {
-        return Role::select('name')->findOrFail($id);
+        $role = Role::findById($roleId);
+        $data = $role->syncPermissions($permissions);
+        return $data;
+    }
+
+    public function getRoleByID(int $id)
+    {
+        return Role::select('name')->find($id);
     }
 
     public function update(RoleRequest $data, int $id)
     {
-        $data = Role::find($id)->update($data->toArray());
-
+        try {
+            $role = Role::find($id);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            throw $e;
+        }
+        if ($role) {
+            // update role name
+            $data = $role->update($data->toArray());
+        }
         return $data;
     }
 
-    public function delete(Role $role)
+
+    public function delete(int $id)
     {
-        $role->delete();
+        return Role::find($id)->delete();
     }
 }

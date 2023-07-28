@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Permission\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +25,10 @@ Route::post('/v1/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     // Role routes
-    // Route::resource('roles', 'RoleController')->except(['create', 'edit']);
-    // Route::resource('roles', RoleController::class);
+    Route::post('/v1/roles/{role_id}/permissions', [RoleController::class, 'addPermissionsToRole']);
+
+    Route::resource('/v1/roles', RoleController::class);
 
     // Permission routes
-    // Route::resource('permissions', 'PermissionController')->except(['create', 'edit']);
-    // Route::resource('permissions', PermissionController::class);
+    Route::resource('/v1/permissions', PermissionController::class);
 });

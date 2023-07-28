@@ -2,46 +2,55 @@
 
 namespace App\Services\Role;
 
+use Exception;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use App\Http\Requests\Role\RoleRequest;
-use App\Repositories\Role\RepoInterface\RoleRepositoryInterface;
+use App\Repositories\Role\RoleRepository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RoleService
 {
-    protected $roleRepository;
+    protected $repository;
 
-    public function __construct(RoleRepositoryInterface $roleRepository)
+    public function __construct(RoleRepository $repository)
     {
-        $this->roleRepository = $roleRepository;
+        $this->repository = $repository;
     }
 
     public function getAll()
     {
-        return $this->roleRepository->getAll();
+        return $this->repository->getAll();
     }
 
-    public function add(Request $data)
+    public function add(RoleRequest $request)
     {
-        return $this->roleRepository->create($data);
+        return $this->repository->create($request);
     }
 
-    public function getRoleByID($id)
+    public function addPermissionsToRole($roleId, array $permissions)
     {
-        return $this->roleRepository->getRoleByID($id);
+        return $this->repository->addPermissionsToRole($roleId, $permissions);
+    }
+
+    public function getRoleByID(int $id)
+    {
+        return $this->repository->getRoleByID($id);
     }
 
     public function update(RoleRequest $request, int $id)
     {
-        $data = new RoleRequest([
-            'name' => $request->name,
-        ]);
-
-        return $this->roleRepository->update($data, $id);
+        try {
+            $data = $this->repository->update($request, $id);
+        } catch (ModelNotFoundException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $data;
     }
 
-    public function delete(Role $role)
+    public function delete(int $id)
     {
-        $this->roleRepository->delete($role);
+        $this->repository->delete($id);
     }
 }

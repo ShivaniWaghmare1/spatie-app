@@ -15,24 +15,23 @@ class AuthService
         $this->repository = $repository;
     }
 
-    public function login($credentials)
-    {
-        try {
-            $authGuard = Auth::guard('web');
-            if (!$authGuard->attempt($credentials)) {
-                return 'Invalid Login Credentials';
-            }
-            $user = $authGuard->user();
-            $token = $user->createToken('user')->accessToken;
-        } catch (Exception $e) {
-            return $e;
-        }
+    // public function login($credentials)
+    // {
+    //     try {
+    //         $authGuard = Auth::guard('web');
+    //         if (!$authGuard->attempt($credentials)) {
+    //             return 'Invalid Login Credentials';
+    //         }
+    //         $user = $authGuard->user();
+    //         // $token = $user->createToken('user')->accessToken;
+    //     } catch (Exception $e) {
+    //         return $e;
+    //     }
 
-        return [
-            'user' => $user,
-            'token' => $token,
-        ];
-    }
+    //     return [
+    //         'user' => $user,
+    //     ];
+    // }
 
     public function register($request)
     {

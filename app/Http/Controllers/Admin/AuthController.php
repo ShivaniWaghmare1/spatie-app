@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use App\Helpers\ResponseHelper;
 use App\Services\Admin\AuthService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Requests\Admin\RegisterRequest;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\UnauthorizedException;
+use Laravel\Passport\Exceptions\AuthenticationException;
 
 class AuthController extends Controller
 {
@@ -29,14 +32,31 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
+        $data = null;
+        $code = "SUCCESS";
         try {
             $credentials = $request->only(['mobile', 'password']);
-            $data = $this->service->login($credentials);
+            $authGuard = Auth::guard('web');
+            if (!$authGuard->attempt($credentials)) {
+                throw new AuthenticationException;
+            }
+            $user = $authGuard->user();
+            $token = $user->createToken('user')->accessToken;
 
-            return $data;
+            return response()->json([
+                'token' => $token
+            ]);
+        } catch (ValidationException $e) {
+            $code = "INVALID_DATA";
+        } catch (AuthenticationException $e) {
+            $code = "INVALID_CREDENTIALS";
         } catch (Exception $e) {
             return $e;
         }
+        return ResponseHelper::respond(
+            $code,
+            $data,
+        );
     }
 
     /**
@@ -47,21 +67,17 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request)
     {
+        $data = null;
+        $code = "SUCCESS";
         // Create a new user record
         try {
             $data = $this->service->register($request);
-            return response()->json([
-                'message' => 'User created successfully',
-                'data' => $data
-            ]);
-        } catch (ValidationException $e) {
-            $code = "INVALID DATA";
         } catch (Exception $e) {
             $code = "DOES_NOT_EXIST";
         }
-        // return ResponseHelper::respond(
-        //     $code,
-        //     $data,
-        // );
+        return ResponseHelper::respond(
+            $code,
+            $data,
+        );
     }
 }
